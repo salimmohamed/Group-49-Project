@@ -1,128 +1,152 @@
--- Disable foreign key checks temporarily
-SET foreign_key_checks = 0;
+-- CS340 Project Step 2 - Group 49
+-- Team: Salim Mohamed & Ky Veney
+-- Purpose: Schema (DDL) and example data inserts for Tech R Us Sales Management System
 
--- Manufacturers table
-DROP TABLE IF EXISTS `Manufacturers`;
-
-CREATE TABLE `Manufacturers` (
-    `ManufacturerID` INT(11) NOT NULL AUTO_INCREMENT,
-    `Name` VARCHAR(255) NOT NULL,
-    `ContactEmail` VARCHAR(255) DEFAULT NULL,
-    `PhoneNumber` VARCHAR(50) DEFAULT NULL,
-    `Address` VARCHAR(255) DEFAULT NULL,
-    PRIMARY KEY (`ManufacturerID`)
-);
-
-INSERT INTO `Manufacturers` (`ManufacturerID`, `Name`, `ContactEmail`, `PhoneNumber`, `Address`)
-VALUES
-    (1, 'TechCorp Industries', 'contact@techcorp.com', '555-0101', '123 Tech Street, San Francisco, CA'),
-    (2, 'Digital Solutions Inc', 'info@digitalsolutions.com', '555-0202', '456 Digital Ave, Seattle, WA'),
-    (3, 'ElectroMax Systems', 'sales@electromax.com', '555-0303', '789 Electronics Blvd, Austin, TX');
-
--- SalesAssociates table
-DROP TABLE IF EXISTS `SalesAssociates`;
-
-CREATE TABLE `SalesAssociates` (
-    `AssociateID` INT(11) NOT NULL AUTO_INCREMENT,
-    `FirstName` VARCHAR(255) NOT NULL,
-    `LastName` VARCHAR(255) NOT NULL,
-    `Email` VARCHAR(255) DEFAULT NULL,
-    `PhoneNumber` VARCHAR(50) DEFAULT NULL,
-    `Type` VARCHAR(50) DEFAULT NULL,
-    PRIMARY KEY (`AssociateID`)
-);
-
-INSERT INTO `SalesAssociates` (`AssociateID`, `FirstName`, `LastName`, `Email`, `PhoneNumber`, `Type`)
-VALUES
-    (1, 'John', 'Smith', 'john.smith@techrus.com', '555-1001', 'Full-time'),
-    (2, 'Sarah', 'Johnson', 'sarah.johnson@techrus.com', '555-1002', 'Part-time'),
-    (3, 'Michael', 'Brown', 'michael.brown@techrus.com', '555-1003', 'Full-time');
-
--- Customers table
-DROP TABLE IF EXISTS `Customers`;
-
+-- -----------------------------
+-- Table: Customers
+-- -----------------------------
 CREATE TABLE `Customers` (
-    `CustomerID` INT(11) NOT NULL AUTO_INCREMENT,
-    `FirstName` VARCHAR(255) NOT NULL,
-    `LastName` VARCHAR(255) NOT NULL,
-    `Email` VARCHAR(255) DEFAULT NULL,
-    `PhoneNumber` VARCHAR(50) DEFAULT NULL,
-    `Address` VARCHAR(255) DEFAULT NULL,
-    PRIMARY KEY (`CustomerID`)
+  `CustomerID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `FirstName` VARCHAR(100) NOT NULL,
+  `LastName` VARCHAR(100) NOT NULL,
+  `Email` VARCHAR(100) NOT NULL,
+  `PhoneNumber` VARCHAR(10) NULL,
+  `Address` VARCHAR(255) NULL,
+  PRIMARY KEY (`CustomerID`),
+  UNIQUE KEY `UQ_Customers_Email` (`Email`)
 );
 
-INSERT INTO `Customers` (`CustomerID`, `FirstName`, `LastName`, `Email`, `PhoneNumber`, `Address`)
-VALUES
-    (1, 'Alice', 'Williams', 'alice.williams@email.com', '555-2001', '100 Main St, Portland, OR'),
-    (2, 'Bob', 'Davis', 'bob.davis@email.com', '555-2002', '200 Oak Ave, Portland, OR'),
-    (3, 'Carol', 'Miller', 'carol.miller@email.com', '555-2003', '300 Pine Rd, Portland, OR');
+-- -----------------------------
+-- Table: SalesAssociates
+-- -----------------------------
+CREATE TABLE `SalesAssociates` (
+  `AssociateID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `FirstName` VARCHAR(100) NOT NULL,
+  `LastName` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`AssociateID`)
+);
 
--- Products table
-DROP TABLE IF EXISTS `Products`;
+-- -----------------------------
+-- Table: Manufacturers
+-- -----------------------------
+CREATE TABLE `Manufacturers` (
+  `ManufacturerID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ManufacturerName` VARCHAR(100) NOT NULL,
+  `ContactEmail` VARCHAR(100) NULL,
+  PRIMARY KEY (`ManufacturerID`)
+);
 
+-- -----------------------------
+-- Table: Products
+-- -----------------------------
 CREATE TABLE `Products` (
-    `ProductID` INT(11) NOT NULL AUTO_INCREMENT,
-    `Name` VARCHAR(255) NOT NULL,
-    `Description` TEXT DEFAULT NULL,
-    `Price` DECIMAL(10, 2) NOT NULL,
-    `Stock` INT(11) DEFAULT 0,
-    `ManufacturerID` INT(11) DEFAULT NULL,
-    PRIMARY KEY (`ProductID`),
-    KEY `ManufacturerID` (`ManufacturerID`),
-    CONSTRAINT `Products_ibfk_1` FOREIGN KEY (`ManufacturerID`) REFERENCES `Manufacturers` (`ManufacturerID`) ON DELETE SET NULL ON UPDATE CASCADE
+  `ProductID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ProductName` VARCHAR(100) NOT NULL,
+  `ProductDescription` TEXT NOT NULL,
+  `Price` DECIMAL(10,2) NOT NULL,
+  `StockQty` INT NOT NULL,
+  `Type` VARCHAR(50) NULL,
+  `ManufacturerID` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`ProductID`),
+  KEY `IX_Products_ManufacturerID` (`ManufacturerID`),
+  CONSTRAINT `FK_Products_Manufacturers`
+    FOREIGN KEY (`ManufacturerID`) REFERENCES `Manufacturers` (`ManufacturerID`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
 );
 
-INSERT INTO `Products` (`ProductID`, `Name`, `Description`, `Price`, `Stock`, `ManufacturerID`)
-VALUES
-    (1, 'Laptop Pro 15', 'High-performance laptop with 16GB RAM', 1299.99, 25, 1),
-    (2, 'Wireless Mouse', 'Ergonomic wireless mouse', 29.99, 150, 2),
-    (3, 'USB-C Cable', 'Fast charging USB-C cable', 19.99, 200, 3),
-    (4, 'Keyboard Elite', 'Mechanical keyboard with RGB lighting', 89.99, 50, 1);
-
--- Sales table
-DROP TABLE IF EXISTS `Sales`;
-
+-- -----------------------------
+-- Table: Sales 
+-- -----------------------------
 CREATE TABLE `Sales` (
-    `SaleID` INT(11) NOT NULL AUTO_INCREMENT,
-    `CustomerID` INT(11) NOT NULL,
-    `AssociateID` INT(11) NOT NULL,
-    `OrderDate` DATE NOT NULL,
-    `Status` VARCHAR(50) DEFAULT 'Pending',
-    PRIMARY KEY (`SaleID`),
-    KEY `CustomerID` (`CustomerID`),
-    KEY `AssociateID` (`AssociateID`),
-    CONSTRAINT `Sales_ibfk_1` FOREIGN KEY (`CustomerID`) REFERENCES `Customers` (`CustomerID`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `Sales_ibfk_2` FOREIGN KEY (`AssociateID`) REFERENCES `SalesAssociates` (`AssociateID`) ON DELETE CASCADE ON UPDATE CASCADE
+  `SaleID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `CustomerID` INT UNSIGNED NOT NULL,
+  `OrderDate` DATETIME NOT NULL,
+  `Status` VARCHAR(50) NOT NULL,
+  `AssociateID` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`SaleID`),
+  KEY `IX_Sales_CustomerID` (`CustomerID`),
+  KEY `IX_Sales_AssociateID` (`AssociateID`),
+  CONSTRAINT `FK_Sales_Customers`
+    FOREIGN KEY (`CustomerID`) REFERENCES `Customers` (`CustomerID`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `FK_Sales_SalesAssociates`
+    FOREIGN KEY (`AssociateID`) REFERENCES `SalesAssociates` (`AssociateID`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
 );
 
-INSERT INTO `Sales` (`SaleID`, `CustomerID`, `AssociateID`, `OrderDate`, `Status`)
-VALUES
-    (1, 1, 1, '2024-01-15', 'Completed'),
-    (2, 2, 2, '2024-01-16', 'Pending'),
-    (3, 1, 1, '2024-01-17', 'Completed');
-
--- SalesDetails table
-DROP TABLE IF EXISTS `SalesDetails`;
-
+-- -----------------------------
+-- Table: SalesDetails
+-- -----------------------------
 CREATE TABLE `SalesDetails` (
-    `SalesDetailID` INT(11) NOT NULL AUTO_INCREMENT,
-    `SaleID` INT(11) NOT NULL,
-    `ProductID` INT(11) NOT NULL,
-    `Quantity` INT(11) NOT NULL,
-    `ItemPrice` DECIMAL(10, 2) NOT NULL,
-    PRIMARY KEY (`SalesDetailID`),
-    KEY `SaleID` (`SaleID`),
-    KEY `ProductID` (`ProductID`),
-    CONSTRAINT `SalesDetails_ibfk_1` FOREIGN KEY (`SaleID`) REFERENCES `Sales` (`SaleID`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `SalesDetails_ibfk_2` FOREIGN KEY (`ProductID`) REFERENCES `Products` (`ProductID`) ON DELETE CASCADE ON UPDATE CASCADE
+  `SalesItemID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `SaleID` INT UNSIGNED NOT NULL,
+  `ProductID` INT UNSIGNED NOT NULL,
+  `ItemPrice` DECIMAL(10,2) NOT NULL, 
+  `Quantity` INT NOT NULL,
+  PRIMARY KEY (`SalesItemID`),
+  KEY `IX_SalesDetails_SaleID` (`SaleID`),
+  KEY `IX_SalesDetails_ProductID` (`ProductID`),
+  CONSTRAINT `FK_SalesDetails_Sales`
+    FOREIGN KEY (`SaleID`) REFERENCES `Sales` (`SaleID`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `FK_SalesDetails_Products`
+    FOREIGN KEY (`ProductID`) REFERENCES `Products` (`ProductID`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
 );
 
-INSERT INTO `SalesDetails` (`SalesDetailID`, `SaleID`, `ProductID`, `Quantity`, `ItemPrice`)
-VALUES
-    (1, 1, 1, 1, 1299.99),
-    (2, 1, 2, 2, 29.99),
-    (3, 2, 3, 5, 19.99),
-    (4, 3, 4, 1, 89.99);
+-- =============================================
+-- Example Data (3-5 rows per table)
+-- =============================================
 
--- Re-enable foreign key checks
-SET foreign_key_checks = 1;
+-- Customers
+INSERT INTO `Customers` (`FirstName`, `LastName`, `Email`, `PhoneNumber`, `Address`) VALUES
+('Alice', 'Nguyen', 'alice.nguyen@example.com', '5415551234', '123 Maple St, Corvallis, OR'),
+('Bob', 'Martinez', 'bob.martinez@example.com', NULL, '456 Oak Ave, Albany, OR'),
+('Carol', 'Lee', 'carol.lee@example.com', '5415557890', NULL),
+('David', 'Kim', 'david.kim@example.com', '5415552222', '789 Pine Rd, Salem, OR');
+
+-- SalesAssociates
+INSERT INTO `SalesAssociates` (`FirstName`, `LastName`) VALUES
+('Jenna', 'Stone'),
+('Ravi', 'Patel'),
+('Mia', 'Gonzalez');
+
+-- Manufacturers
+INSERT INTO `Manufacturers` (`ManufacturerName`, `ContactEmail`) VALUES
+('ApexTech', 'support@apextech.com'),
+('NovaGear', 'sales@novagear.com'),
+('BlueWave', NULL);
+
+-- Products
+INSERT INTO `Products` (`ProductName`, `ProductDescription`, `Price`, `StockQty`, `Type`, `ManufacturerID`) VALUES
+('Apex Laptop 14', '14-inch lightweight laptop with 16GB RAM', 899.99, 25, 'Laptop', 1),
+('Nova Tablet 10', '10-inch tablet with stylus support', 349.50, 40, 'Tablet', 2),
+('BlueWave Mouse', 'Ergonomic wireless mouse', 29.99, 100, 'Accessory', 3),
+('Apex USB-C Hub', '7-in-1 USB-C docking station', 59.95, 60, 'Accessory', 1),
+('Nova Keyboard', 'Compact mechanical keyboard', 79.00, 50, 'Accessory', 2);
+
+-- Sales
+INSERT INTO `Sales` (`CustomerID`, `OrderDate`, `Status`, `AssociateID`) VALUES
+(1, '2025-10-01 10:15:00', 'Paid', 1),
+(2, '2025-10-02 14:30:00', 'Paid', 2),
+(3, '2025-10-03 09:05:00', 'Pending', 3);
+
+-- SalesDetails
+-- Sale 1
+INSERT INTO `SalesDetails` (`SaleID`, `ProductID`, `ItemPrice`, `Quantity`) VALUES
+(1, 1, 899.99, 1),
+(1, 3, 24.99, 2); 
+
+-- Sale 2
+INSERT INTO `SalesDetails` (`SaleID`, `ProductID`, `ItemPrice`, `Quantity`) VALUES
+(2, 2, 349.50, 1),
+(2, 5, 79.00, 1);
+
+-- Sale 3
+INSERT INTO `SalesDetails` (`SaleID`, `ProductID`, `ItemPrice`, `Quantity`) VALUES
+(3, 4, 59.95, 1);
