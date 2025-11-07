@@ -12,7 +12,7 @@ A full-stack web application for managing sales operations with CRUD (Create, Re
 
 1. Navigate to the backend directory:
    ```bash
-   cd App/backend
+   cd backend
    ```
 
 2. Install dependencies:
@@ -43,7 +43,7 @@ A full-stack web application for managing sales operations with CRUD (Create, Re
 
 1. Navigate to the frontend directory:
    ```bash
-   cd App/frontend
+   cd frontend
    ```
 
 2. Install dependencies:
@@ -74,7 +74,7 @@ A full-stack web application for managing sales operations with CRUD (Create, Re
 ## Project Structure
 
 ```
-App/
+Project3/
   backend/
     controllers/     # Request handlers
     routes/         # API route definitions
@@ -85,6 +85,7 @@ App/
       components/   # React components
       pages/        # Page components
     public/         # Static assets
+  README.md         # This file
 ```
 
 ## API Endpoints
