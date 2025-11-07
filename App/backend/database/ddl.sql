@@ -1,121 +1,128 @@
 -- Disable foreign key checks temporarily
-SET
-    foreign_key_checks = 0;
+SET foreign_key_checks = 0;
 
--- Planets table
-DROP TABLE IF EXISTS `bsg_planets`;
+-- Manufacturers table
+DROP TABLE IF EXISTS `Manufacturers`;
 
-CREATE TABLE `bsg_planets` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
-    `population` BIGINT(20) DEFAULT NULL,
-    `language` VARCHAR(255) DEFAULT NULL,
-    `capital` VARCHAR(255) DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `name` (`name`)
+CREATE TABLE `Manufacturers` (
+    `ManufacturerID` INT(11) NOT NULL AUTO_INCREMENT,
+    `Name` VARCHAR(255) NOT NULL,
+    `ContactEmail` VARCHAR(255) DEFAULT NULL,
+    `PhoneNumber` VARCHAR(50) DEFAULT NULL,
+    `Address` VARCHAR(255) DEFAULT NULL,
+    PRIMARY KEY (`ManufacturerID`)
 );
 
-INSERT INTO
-    `bsg_planets` (
-        `id`,
-        `name`,
-        `population`,
-        `language`,
-        `capital`
-    )
+INSERT INTO `Manufacturers` (`ManufacturerID`, `Name`, `ContactEmail`, `PhoneNumber`, `Address`)
 VALUES
-    (
-        1,
-        'Gemenon',
-        2800000000,
-        'Old Gemenese',
-        'Oranu'
-    ),
-    (2, 'Leonis', 2600000000, 'Leonese', 'Luminere'),
-    (
-        3,
-        'Caprica',
-        4900000000,
-        'Caprican',
-        'Caprica City'
-    ),
-    (7, 'Sagittaron', 1700000000, NULL, 'Tawa'),
-    (16, 'Aquaria', 25000, NULL, NULL),
-    (17, 'Canceron', 6700000000, NULL, 'Hades'),
-    (18, 'Libran', 2100000, NULL, NULL),
-    (19, 'Picon', 1400000000, NULL, 'Queestown'),
-    (20, 'Scorpia', 450000000, NULL, 'Celeste'),
-    (21, 'Tauron', 2500000000, 'Tauron', 'Hypatia'),
-    (22, 'Virgon', 4300000000, NULL, 'Boskirk');
+    (1, 'TechCorp Industries', 'contact@techcorp.com', '555-0101', '123 Tech Street, San Francisco, CA'),
+    (2, 'Digital Solutions Inc', 'info@digitalsolutions.com', '555-0202', '456 Digital Ave, Seattle, WA'),
+    (3, 'ElectroMax Systems', 'sales@electromax.com', '555-0303', '789 Electronics Blvd, Austin, TX');
 
--- Certification table
-DROP TABLE IF EXISTS `bsg_cert`;
+-- SalesAssociates table
+DROP TABLE IF EXISTS `SalesAssociates`;
 
-CREATE TABLE `bsg_cert` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `title` VARCHAR(255) NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE `SalesAssociates` (
+    `AssociateID` INT(11) NOT NULL AUTO_INCREMENT,
+    `FirstName` VARCHAR(255) NOT NULL,
+    `LastName` VARCHAR(255) NOT NULL,
+    `Email` VARCHAR(255) DEFAULT NULL,
+    `PhoneNumber` VARCHAR(50) DEFAULT NULL,
+    `Type` VARCHAR(50) DEFAULT NULL,
+    PRIMARY KEY (`AssociateID`)
 );
 
-INSERT INTO
-    `bsg_cert` (`id`, `title`)
+INSERT INTO `SalesAssociates` (`AssociateID`, `FirstName`, `LastName`, `Email`, `PhoneNumber`, `Type`)
 VALUES
-    (1, 'Raptor'),
-    (2, 'Viper'),
-    (3, 'Mechanic'),
-    (4, 'Command');
+    (1, 'John', 'Smith', 'john.smith@techrus.com', '555-1001', 'Full-time'),
+    (2, 'Sarah', 'Johnson', 'sarah.johnson@techrus.com', '555-1002', 'Part-time'),
+    (3, 'Michael', 'Brown', 'michael.brown@techrus.com', '555-1003', 'Full-time');
 
--- People table
-DROP TABLE IF EXISTS `bsg_people`;
+-- Customers table
+DROP TABLE IF EXISTS `Customers`;
 
-CREATE TABLE `bsg_people` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `fname` VARCHAR(255) NOT NULL,
-    `lname` VARCHAR(255) DEFAULT NULL,
-    `homeworld` INT(11) DEFAULT NULL,
-    `age` INT(11) DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    KEY `homeworld` (`homeworld`),
-    CONSTRAINT `bsg_people_ibfk_1` FOREIGN KEY (`homeworld`) REFERENCES `bsg_planets` (`id`) ON DELETE
-    SET
-        NULL ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 DEFAULT CHARSET = latin1;
-
-INSERT INTO
-    `bsg_people` (`id`, `fname`, `lname`, `homeworld`, `age`)
-VALUES
-    (1, 'William', 'Adama', 3, 61),
-    (2, 'Lee', 'Adama', 3, 30),
-    (3, 'Laura', 'Roslin', 3, NULL),
-    (4, 'Kara', 'Thrace', 3, NULL),
-    (5, 'Gaius', 'Baltar', 3, NULL),
-    (6, 'Saul', 'Tigh', NULL, 71),
-    (7, 'Karl', 'Agathon', 1, NULL),
-    (8, 'Galen', 'Tyrol', 1, 32),
-    (9, 'Callandra', 'Henderson', NULL, NULL);
-
--- Certification-People relationship table
-CREATE TABLE `bsg_cert_people` (
-    `cid` INT(11) NOT NULL DEFAULT '0',
-    `pid` INT(11) NOT NULL DEFAULT '0',
-    PRIMARY KEY (`cid`, `pid`),
-    KEY `pid` (`pid`),
-    CONSTRAINT `bsg_cert_people_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `bsg_cert` (`id`),
-    CONSTRAINT `bsg_cert_people_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `bsg_people` (`id`)
+CREATE TABLE `Customers` (
+    `CustomerID` INT(11) NOT NULL AUTO_INCREMENT,
+    `FirstName` VARCHAR(255) NOT NULL,
+    `LastName` VARCHAR(255) NOT NULL,
+    `Email` VARCHAR(255) DEFAULT NULL,
+    `PhoneNumber` VARCHAR(50) DEFAULT NULL,
+    `Address` VARCHAR(255) DEFAULT NULL,
+    PRIMARY KEY (`CustomerID`)
 );
 
-INSERT INTO
-    `bsg_cert_people` (`cid`, `pid`)
+INSERT INTO `Customers` (`CustomerID`, `FirstName`, `LastName`, `Email`, `PhoneNumber`, `Address`)
 VALUES
-    (2, 2),
-    (4, 2),
-    (4, 3),
-    (2, 4),
-    (4, 6),
-    (1, 7),
-    (3, 8),
-    (3, 9);
+    (1, 'Alice', 'Williams', 'alice.williams@email.com', '555-2001', '100 Main St, Portland, OR'),
+    (2, 'Bob', 'Davis', 'bob.davis@email.com', '555-2002', '200 Oak Ave, Portland, OR'),
+    (3, 'Carol', 'Miller', 'carol.miller@email.com', '555-2003', '300 Pine Rd, Portland, OR');
+
+-- Products table
+DROP TABLE IF EXISTS `Products`;
+
+CREATE TABLE `Products` (
+    `ProductID` INT(11) NOT NULL AUTO_INCREMENT,
+    `Name` VARCHAR(255) NOT NULL,
+    `Description` TEXT DEFAULT NULL,
+    `Price` DECIMAL(10, 2) NOT NULL,
+    `Stock` INT(11) DEFAULT 0,
+    `ManufacturerID` INT(11) DEFAULT NULL,
+    PRIMARY KEY (`ProductID`),
+    KEY `ManufacturerID` (`ManufacturerID`),
+    CONSTRAINT `Products_ibfk_1` FOREIGN KEY (`ManufacturerID`) REFERENCES `Manufacturers` (`ManufacturerID`) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+INSERT INTO `Products` (`ProductID`, `Name`, `Description`, `Price`, `Stock`, `ManufacturerID`)
+VALUES
+    (1, 'Laptop Pro 15', 'High-performance laptop with 16GB RAM', 1299.99, 25, 1),
+    (2, 'Wireless Mouse', 'Ergonomic wireless mouse', 29.99, 150, 2),
+    (3, 'USB-C Cable', 'Fast charging USB-C cable', 19.99, 200, 3),
+    (4, 'Keyboard Elite', 'Mechanical keyboard with RGB lighting', 89.99, 50, 1);
+
+-- Sales table
+DROP TABLE IF EXISTS `Sales`;
+
+CREATE TABLE `Sales` (
+    `SaleID` INT(11) NOT NULL AUTO_INCREMENT,
+    `CustomerID` INT(11) NOT NULL,
+    `AssociateID` INT(11) NOT NULL,
+    `OrderDate` DATE NOT NULL,
+    `Status` VARCHAR(50) DEFAULT 'Pending',
+    PRIMARY KEY (`SaleID`),
+    KEY `CustomerID` (`CustomerID`),
+    KEY `AssociateID` (`AssociateID`),
+    CONSTRAINT `Sales_ibfk_1` FOREIGN KEY (`CustomerID`) REFERENCES `Customers` (`CustomerID`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `Sales_ibfk_2` FOREIGN KEY (`AssociateID`) REFERENCES `SalesAssociates` (`AssociateID`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+INSERT INTO `Sales` (`SaleID`, `CustomerID`, `AssociateID`, `OrderDate`, `Status`)
+VALUES
+    (1, 1, 1, '2024-01-15', 'Completed'),
+    (2, 2, 2, '2024-01-16', 'Pending'),
+    (3, 1, 1, '2024-01-17', 'Completed');
+
+-- SalesDetails table
+DROP TABLE IF EXISTS `SalesDetails`;
+
+CREATE TABLE `SalesDetails` (
+    `SalesDetailID` INT(11) NOT NULL AUTO_INCREMENT,
+    `SaleID` INT(11) NOT NULL,
+    `ProductID` INT(11) NOT NULL,
+    `Quantity` INT(11) NOT NULL,
+    `ItemPrice` DECIMAL(10, 2) NOT NULL,
+    PRIMARY KEY (`SalesDetailID`),
+    KEY `SaleID` (`SaleID`),
+    KEY `ProductID` (`ProductID`),
+    CONSTRAINT `SalesDetails_ibfk_1` FOREIGN KEY (`SaleID`) REFERENCES `Sales` (`SaleID`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `SalesDetails_ibfk_2` FOREIGN KEY (`ProductID`) REFERENCES `Products` (`ProductID`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+INSERT INTO `SalesDetails` (`SalesDetailID`, `SaleID`, `ProductID`, `Quantity`, `ItemPrice`)
+VALUES
+    (1, 1, 1, 1, 1299.99),
+    (2, 1, 2, 2, 29.99),
+    (3, 2, 3, 5, 19.99),
+    (4, 3, 4, 1, 89.99);
 
 -- Re-enable foreign key checks
-SET
-    foreign_key_checks = 1;
+SET foreign_key_checks = 1;

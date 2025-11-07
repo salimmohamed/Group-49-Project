@@ -1,22 +1,28 @@
 import { Link } from "react-router-dom";
-import { MdLocalConvenienceStore } from "react-icons/md";
 
 const Navbar = () => {
   return (
     <header>
-      <div>
-        <Link to="/">
-          <MdLocalConvenienceStore size={80} />
-        </Link>
-      </div>
-      <h1>My website name</h1>
+      <h1>Tech R Us Sales Management System</h1>
       <nav>
         <ul>
           <li>
-            <Link to="/">Home</Link>
+            <Link to="/customers">Customers</Link>
           </li>
           <li>
-            <Link to="/people">BSG People</Link>
+            <Link to="/products">Products</Link>
+          </li>
+          <li>
+            <Link to="/sales">Sales</Link>
+          </li>
+          <li>
+            <Link to="/salesDetails">Sales Details</Link>
+          </li>
+          <li>
+            <Link to="/salesAssociates">Sales Associates</Link>
+          </li>
+          <li>
+            <Link to="/manufacturers">Manufacturers</Link>
           </li>
         </ul>
       </nav>

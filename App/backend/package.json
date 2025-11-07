@@ -8,8 +8,8 @@
     "serve": "npx forever start server.js"
   },
   "contributors": [
-    "Devin Daniels <https://github.com/devingdaniels>",
-    "Zac Maes <https://github.com/zacmaes>"
+    "Salim Mohamed",
+    "Samuel Veney"
   ],
   "license": "ISC",
   "dependencies": {
