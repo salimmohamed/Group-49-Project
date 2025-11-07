@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CS340 Project - Tech R Us Sales Management System
 
 Authors: Salim Mohamed, Samuel Veney
@@ -131,4 +132,6 @@ Project3/
 - `POST /api/manufacturers` - Create a new manufacturer
 - `PUT /api/manufacturers/:id` - Update a manufacturer
 - `DELETE /api/manufacturers/:id` - Delete a manufacturer
+=======
+>>>>>>> ac9025946dced23585c9c7ab4d0865e166b1eda8
 
