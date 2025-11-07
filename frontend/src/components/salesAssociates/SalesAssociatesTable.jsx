@@ -3,7 +3,14 @@ import axios from "axios";
 import SalesAssociateTableRow from "./SalesAssociateTableRow";
 
 const SalesAssociatesTable = () => {
-  const [salesAssociates, setSalesAssociates] = useState([]);
+  // Mock data for Step 3 Draft demonstration
+  const mockSalesAssociates = [
+    { AssociateID: 1, FirstName: 'John', LastName: 'Smith', Email: 'john.smith@techrus.com', PhoneNumber: '555-1001', Type: 'Full-time' },
+    { AssociateID: 2, FirstName: 'Sarah', LastName: 'Johnson', Email: 'sarah.johnson@techrus.com', PhoneNumber: '555-1002', Type: 'Part-time' },
+    { AssociateID: 3, FirstName: 'Michael', LastName: 'Brown', Email: 'michael.brown@techrus.com', PhoneNumber: '555-1003', Type: 'Full-time' }
+  ];
+
+  const [salesAssociates, setSalesAssociates] = useState(mockSalesAssociates);
 
   const fetchSalesAssociates = async () => {
     try {
@@ -12,13 +19,13 @@ const SalesAssociatesTable = () => {
       const response = await axios.get(URL);
       if (response.data && response.data.error) {
         console.error("API Error:", response.data.error);
-        setSalesAssociates([]);
+        setSalesAssociates(mockSalesAssociates);
         return;
       }
-      setSalesAssociates(Array.isArray(response.data) ? response.data : []);
+      setSalesAssociates(Array.isArray(response.data) && response.data.length > 0 ? response.data : mockSalesAssociates);
     } catch (error) {
       console.error("Error fetching sales associates:", error);
-      setSalesAssociates([]);
+      setSalesAssociates(mockSalesAssociates);
     }
   };
 

@@ -3,7 +3,14 @@ import axios from "axios";
 import SaleTableRow from "./SaleTableRow";
 
 const SalesTable = () => {
-  const [sales, setSales] = useState([]);
+  // Mock data for Step 3 Draft demonstration
+  const mockSales = [
+    { SaleID: 1, CustomerID: 1, AssociateID: 1, OrderDate: '2024-01-15', Status: 'Completed' },
+    { SaleID: 2, CustomerID: 2, AssociateID: 2, OrderDate: '2024-01-16', Status: 'Pending' },
+    { SaleID: 3, CustomerID: 1, AssociateID: 1, OrderDate: '2024-01-17', Status: 'Completed' }
+  ];
+
+  const [sales, setSales] = useState(mockSales);
 
   const fetchSales = async () => {
     try {
@@ -12,13 +19,13 @@ const SalesTable = () => {
       const response = await axios.get(URL);
       if (response.data && response.data.error) {
         console.error("API Error:", response.data.error);
-        setSales([]);
+        setSales(mockSales);
         return;
       }
-      setSales(Array.isArray(response.data) ? response.data : []);
+      setSales(Array.isArray(response.data) && response.data.length > 0 ? response.data : mockSales);
     } catch (error) {
       console.error("Error fetching sales:", error);
-      setSales([]);
+      setSales(mockSales);
     }
   };
 
