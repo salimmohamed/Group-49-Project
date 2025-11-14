@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const UpdateSale = () => {
   const { id } = useParams();
@@ -34,10 +44,12 @@ const UpdateSale = () => {
           axios.get(customersURL),
           axios.get(associatesURL),
         ]);
-        setCustomers(customersRes.data);
-        setSalesAssociates(associatesRes.data);
+        setCustomers(Array.isArray(customersRes.data) ? customersRes.data : []);
+        setSalesAssociates(Array.isArray(associatesRes.data) ? associatesRes.data : []);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setCustomers([]);
+        setSalesAssociates([]);
       }
       setLoading(false);
     };
@@ -69,73 +81,98 @@ const UpdateSale = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate("/sales");
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="container mx-auto px-4 py-8">Loading...</div>;
   }
 
   return (
-    <div>
-      <h2>Update Sale</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Customer:</label>
-          <select
-            name="CustomerID"
-            value={formData.CustomerID}
-            onChange={handleInputChange}
+    <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <h1 className="text-3xl font-bold mb-6">Update Sale</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 rounded-lg border border-border">
+        <div className="space-y-2">
+          <Label htmlFor="CustomerID">
+            Customer <span className="text-destructive">*</span>
+          </Label>
+          <Select
             required
+            value={formData.CustomerID.toString()}
+            onValueChange={(value) => setFormData({ ...formData, CustomerID: value })}
           >
-            <option value="">Select Customer</option>
-            {customers.map((customer) => (
-              <option key={customer.CustomerID} value={customer.CustomerID}>
-                {customer.FirstName} {customer.LastName}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="Select customer" />
+            </SelectTrigger>
+            <SelectContent>
+              {customers.map((customer) => (
+                <SelectItem key={customer.CustomerID} value={customer.CustomerID.toString()}>
+                  {customer.FirstName} {customer.LastName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <div>
-          <label>Sales Associate:</label>
-          <select
-            name="AssociateID"
-            value={formData.AssociateID}
-            onChange={handleInputChange}
+
+        <div className="space-y-2">
+          <Label htmlFor="AssociateID">
+            Sales Associate <span className="text-destructive">*</span>
+          </Label>
+          <Select
             required
+            value={formData.AssociateID.toString()}
+            onValueChange={(value) => setFormData({ ...formData, AssociateID: value })}
           >
-            <option value="">Select Associate</option>
-            {salesAssociates.map((associate) => (
-              <option key={associate.AssociateID} value={associate.AssociateID}>
-                {associate.FirstName} {associate.LastName}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="Select sales associate" />
+            </SelectTrigger>
+            <SelectContent>
+              {salesAssociates.map((associate) => (
+                <SelectItem key={associate.AssociateID} value={associate.AssociateID.toString()}>
+                  {associate.FirstName} {associate.LastName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <div>
-          <label>Order Date:</label>
-          <input
-            type="date"
+
+        <div className="space-y-2">
+          <Label htmlFor="OrderDate">
+            Order Date <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="OrderDate"
             name="OrderDate"
-            onChange={handleInputChange}
+            type="date"
             required
             value={formData.OrderDate}
-          />
-        </div>
-        <div>
-          <label>Status:</label>
-          <input
-            type="text"
-            name="Status"
             onChange={handleInputChange}
-            value={formData.Status}
           />
         </div>
-        <button type="button" onClick={() => navigate("/sales")}>
-          Cancel
-        </button>
-        <button type="submit">Update</button>
+
+        <div className="space-y-2">
+          <Label htmlFor="Status">Status</Label>
+          <Input
+            id="Status"
+            name="Status"
+            type="text"
+            value={formData.Status}
+            onChange={handleInputChange}
+            placeholder="Pending"
+          />
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <Button type="submit">Update</Button>
+          <Button type="button" variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </div>
       </form>
     </div>
   );
 };
 
 export default UpdateSale;
-

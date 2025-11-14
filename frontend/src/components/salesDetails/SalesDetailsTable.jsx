@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import SalesDetailTableRow from "./SalesDetailTableRow";
+import { DataTable } from "@/components/DataTable";
 
 const SalesDetailsTable = () => {
   // Mock data for Step 3 Draft demonstration
@@ -11,6 +12,7 @@ const SalesDetailsTable = () => {
     { SalesDetailID: 4, SaleID: 3, ProductID: 4, Quantity: 1, ItemPrice: 89.99 }
   ];
 
+  const navigate = useNavigate();
   const [salesDetails, setSalesDetails] = useState(mockSalesDetails);
 
   const fetchSalesDetails = async () => {
@@ -34,35 +36,41 @@ const SalesDetailsTable = () => {
     fetchSalesDetails();
   }, []);
 
-  return (
-    <div>
-      <h2>Sales Details Table</h2>
-      {salesDetails.length === 0 ? (
-        <div>
-          <p>No sales details found.</p>
-        </div>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Sale ID</th>
-              <th>Product ID</th>
-              <th>Quantity</th>
-              <th>Item Price</th>
-              <th>Edit</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {salesDetails.map((detail) => (
-              <SalesDetailTableRow key={detail.SalesDetailID} detail={detail} fetchSalesDetails={fetchSalesDetails} />
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
+  const handleEdit = (detail) => {
+    navigate("/salesDetails/edit/" + detail.SalesDetailID, { state: { detail } });
+  };
+
+  const handleDelete = async (detail) => {
+    if (!window.confirm(`Are you sure you want to delete Sales Detail #${detail.SalesDetailID}?`)) {
+      return;
+    }
+
+    try {
+      const URL = import.meta.env.VITE_API_URL + "salesDetails/" + detail.SalesDetailID;
+      const response = await axios.delete(URL);
+      if (response.status === 204) {
+        alert("Sales detail deleted successfully");
+      }
+    } catch (err) {
+      alert(err.response?.data?.error || "Error deleting sales detail");
+      console.log(err);
+    }
+    fetchSalesDetails();
+  };
+
+  const columns = [
+    { key: 'SalesDetailID', label: 'ID' },
+    { key: 'SaleID', label: 'Sale ID' },
+    { key: 'ProductID', label: 'Product ID' },
+    { key: 'Quantity', label: 'Quantity' },
+    {
+      key: 'ItemPrice',
+      label: 'Item Price',
+      render: (value) => `$${parseFloat(value).toFixed(2)}`
+    },
+  ];
+
+  return <DataTable columns={columns} data={salesDetails} onEdit={handleEdit} onDelete={handleDelete} />;
 };
 
 export default SalesDetailsTable;

@@ -1,10 +1,21 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function CreateProduct() {
   const navigate = useNavigate();
   const [manufacturers, setManufacturers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     Name: "",
@@ -17,12 +28,15 @@ function CreateProduct() {
   useEffect(() => {
     const fetchManufacturers = async () => {
       try {
-        const URL = import.meta.env.VITE_API_URL + "manufacturers";
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8500/api/";
+        const URL = API_URL + "manufacturers";
         const response = await axios.get(URL);
-        setManufacturers(response.data);
+        setManufacturers(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error("Error fetching manufacturers:", error);
+        setManufacturers([]);
       }
+      setLoading(false);
     };
     fetchManufacturers();
   }, []);
@@ -70,58 +84,105 @@ function CreateProduct() {
     }));
   };
 
+  const handleCancel = () => {
+    navigate("/products");
+  };
+
+  if (loading) {
+    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+  }
+
   return (
-    <>
-      <h2>Add Product</h2>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="Name">Name</label>
-        <input
-          type="text"
-          name="Name"
-          value={formData.Name}
-          onChange={handleInputChange}
-          required
-        />
-        <label htmlFor="Description">Description</label>
-        <textarea
-          name="Description"
-          value={formData.Description}
-          onChange={handleInputChange}
-        />
-        <label htmlFor="Price">Price</label>
-        <input
-          type="number"
-          step="0.01"
-          name="Price"
-          value={formData.Price}
-          onChange={handleInputChange}
-          required
-        />
-        <label htmlFor="Stock">Stock</label>
-        <input
-          type="number"
-          name="Stock"
-          value={formData.Stock}
-          onChange={handleInputChange}
-        />
-        <label htmlFor="ManufacturerID">Manufacturer</label>
-        <select
-          name="ManufacturerID"
-          value={formData.ManufacturerID}
-          onChange={handleInputChange}
-        >
-          <option value="">None</option>
-          {manufacturers.map((manufacturer) => (
-            <option key={manufacturer.ManufacturerID} value={manufacturer.ManufacturerID}>
-              {manufacturer.Name}
-            </option>
-          ))}
-        </select>
-        <button type="submit">Add Product</button>
+    <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <h1 className="text-3xl font-bold mb-6">Add New Product</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 rounded-lg border border-border">
+        <div className="space-y-2">
+          <Label htmlFor="Name">
+            Product Name <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="Name"
+            name="Name"
+            type="text"
+            required
+            value={formData.Name}
+            onChange={handleInputChange}
+            placeholder="Enter product name"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="Description">Description</Label>
+          <Input
+            id="Description"
+            name="Description"
+            type="text"
+            value={formData.Description}
+            onChange={handleInputChange}
+            placeholder="Enter product description"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="Price">
+              Price <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="Price"
+              name="Price"
+              type="number"
+              step="0.01"
+              required
+              value={formData.Price}
+              onChange={handleInputChange}
+              placeholder="0.00"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="Stock">Stock Quantity</Label>
+            <Input
+              id="Stock"
+              name="Stock"
+              type="number"
+              value={formData.Stock}
+              onChange={handleInputChange}
+              placeholder="0"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="ManufacturerID">Manufacturer</Label>
+          <Select
+            value={formData.ManufacturerID}
+            onValueChange={(value) => setFormData({ ...formData, ManufacturerID: value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select manufacturer" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="null">None</SelectItem>
+              {manufacturers.map((manufacturer) => (
+                <SelectItem key={manufacturer.ManufacturerID} value={manufacturer.ManufacturerID.toString()}>
+                  {manufacturer.Name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <Button type="submit">Add Product</Button>
+          <Button type="button" variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </div>
       </form>
-    </>
+    </div>
   );
 }
 
 export default CreateProduct;
-

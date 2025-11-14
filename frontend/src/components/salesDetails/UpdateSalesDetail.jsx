@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const UpdateSalesDetail = () => {
   const { id } = useParams();
@@ -69,71 +79,102 @@ const UpdateSalesDetail = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate("/salesDetails");
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="container mx-auto px-4 py-8">Loading...</div>;
   }
 
   return (
-    <div>
-      <h2>Update Sales Detail</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Sale:</label>
-          <select
-            name="SaleID"
-            value={formData.SaleID}
-            onChange={handleInputChange}
+    <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <h1 className="text-3xl font-bold mb-6">Update Sales Detail</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 rounded-lg border border-border">
+        <div className="space-y-2">
+          <Label htmlFor="SaleID">
+            Sale <span className="text-destructive">*</span>
+          </Label>
+          <Select
             required
+            value={formData.SaleID.toString()}
+            onValueChange={(value) => setFormData({ ...formData, SaleID: value })}
           >
-            <option value="">Select Sale</option>
-            {sales.map((sale) => (
-              <option key={sale.SaleID} value={sale.SaleID}>
-                Sale #{sale.SaleID} - {sale.OrderDate}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="Select sale" />
+            </SelectTrigger>
+            <SelectContent>
+              {sales.map((sale) => (
+                <SelectItem key={sale.SaleID} value={sale.SaleID.toString()}>
+                  Sale #{sale.SaleID} - {sale.OrderDate}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <div>
-          <label>Product:</label>
-          <select
-            name="ProductID"
-            value={formData.ProductID}
-            onChange={handleInputChange}
+
+        <div className="space-y-2">
+          <Label htmlFor="ProductID">
+            Product <span className="text-destructive">*</span>
+          </Label>
+          <Select
             required
+            value={formData.ProductID.toString()}
+            onValueChange={(value) => setFormData({ ...formData, ProductID: value })}
           >
-            <option value="">Select Product</option>
-            {products.map((product) => (
-              <option key={product.ProductID} value={product.ProductID}>
-                {product.Name}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="Select product" />
+            </SelectTrigger>
+            <SelectContent>
+              {products.map((product) => (
+                <SelectItem key={product.ProductID} value={product.ProductID.toString()}>
+                  {product.Name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <div>
-          <label>Quantity:</label>
-          <input
-            type="number"
-            name="Quantity"
-            onChange={handleInputChange}
-            required
-            value={formData.Quantity}
-          />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="Quantity">
+              Quantity <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="Quantity"
+              name="Quantity"
+              type="number"
+              required
+              value={formData.Quantity}
+              onChange={handleInputChange}
+              placeholder="0"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="ItemPrice">
+              Item Price <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="ItemPrice"
+              name="ItemPrice"
+              type="number"
+              step="0.01"
+              required
+              value={formData.ItemPrice}
+              onChange={handleInputChange}
+              placeholder="0.00"
+            />
+          </div>
         </div>
-        <div>
-          <label>Item Price:</label>
-          <input
-            type="number"
-            step="0.01"
-            name="ItemPrice"
-            onChange={handleInputChange}
-            required
-            value={formData.ItemPrice}
-          />
+
+        <div className="flex gap-3 pt-4">
+          <Button type="submit">Update</Button>
+          <Button type="button" variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
         </div>
-        <button type="button" onClick={() => navigate("/salesDetails")}>
-          Cancel
-        </button>
-        <button type="submit">Update</button>
       </form>
     </div>
   );

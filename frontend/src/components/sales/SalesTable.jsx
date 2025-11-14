@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import SaleTableRow from "./SaleTableRow";
+import { DataTable } from "@/components/DataTable";
 
 const SalesTable = () => {
   // Mock data for Step 3 Draft demonstration
@@ -10,6 +11,7 @@ const SalesTable = () => {
     { SaleID: 3, CustomerID: 1, AssociateID: 1, OrderDate: '2024-01-17', Status: 'Completed' }
   ];
 
+  const navigate = useNavigate();
   const [sales, setSales] = useState(mockSales);
 
   const fetchSales = async () => {
@@ -33,36 +35,41 @@ const SalesTable = () => {
     fetchSales();
   }, []);
 
-  return (
-    <div>
-      <h2>Sales Table</h2>
-      {sales.length === 0 ? (
-        <div>
-          <p>No sales found.</p>
-        </div>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Customer ID</th>
-              <th>Associate ID</th>
-              <th>Order Date</th>
-              <th>Status</th>
-              <th>Edit</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sales.map((sale) => (
-              <SaleTableRow key={sale.SaleID} sale={sale} fetchSales={fetchSales} />
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
+  const handleEdit = (sale) => {
+    navigate("/sales/edit/" + sale.SaleID, { state: { sale } });
+  };
+
+  const handleDelete = async (sale) => {
+    if (!window.confirm(`Are you sure you want to delete Sale #${sale.SaleID}?`)) {
+      return;
+    }
+
+    try {
+      const URL = import.meta.env.VITE_API_URL + "sales/" + sale.SaleID;
+      const response = await axios.delete(URL);
+      if (response.status === 204) {
+        alert("Sale deleted successfully");
+      }
+    } catch (err) {
+      alert(err.response?.data?.error || "Error deleting sale");
+      console.log(err);
+    }
+    fetchSales();
+  };
+
+  const columns = [
+    { key: 'SaleID', label: 'ID' },
+    { key: 'CustomerID', label: 'Customer ID' },
+    { key: 'AssociateID', label: 'Associate ID' },
+    {
+      key: 'OrderDate',
+      label: 'Order Date',
+      render: (value) => value ? new Date(value).toLocaleDateString() : ''
+    },
+    { key: 'Status', label: 'Status' },
+  ];
+
+  return <DataTable columns={columns} data={sales} onEdit={handleEdit} onDelete={handleDelete} />;
 };
 
 export default SalesTable;
-

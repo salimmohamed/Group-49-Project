@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import SalesAssociateTableRow from "./SalesAssociateTableRow";
+import { DataTable } from "@/components/DataTable";
 
 const SalesAssociatesTable = () => {
   // Mock data for Step 3 Draft demonstration
@@ -10,6 +11,7 @@ const SalesAssociatesTable = () => {
     { AssociateID: 3, FirstName: 'Michael', LastName: 'Brown', Email: 'michael.brown@techrus.com', PhoneNumber: '555-1003', Type: 'Full-time' }
   ];
 
+  const navigate = useNavigate();
   const [salesAssociates, setSalesAssociates] = useState(mockSalesAssociates);
 
   const fetchSalesAssociates = async () => {
@@ -33,36 +35,38 @@ const SalesAssociatesTable = () => {
     fetchSalesAssociates();
   }, []);
 
-  return (
-    <div>
-      <h2>Sales Associates Table</h2>
-      {salesAssociates.length === 0 ? (
-        <div>
-          <p>No sales associates found.</p>
-        </div>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Email</th>
-              <th>Phone Number</th>
-              <th>Type</th>
-              <th>Edit</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {salesAssociates.map((associate) => (
-              <SalesAssociateTableRow key={associate.AssociateID} associate={associate} fetchSalesAssociates={fetchSalesAssociates} />
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
+  const handleEdit = (associate) => {
+    navigate("/salesAssociates/edit/" + associate.AssociateID, { state: { associate } });
+  };
+
+  const handleDelete = async (associate) => {
+    if (!window.confirm(`Are you sure you want to delete ${associate.FirstName} ${associate.LastName}?`)) {
+      return;
+    }
+
+    try {
+      const URL = import.meta.env.VITE_API_URL + "salesAssociates/" + associate.AssociateID;
+      const response = await axios.delete(URL);
+      if (response.status === 204) {
+        alert("Sales associate deleted successfully");
+      }
+    } catch (err) {
+      alert(err.response?.data?.error || "Error deleting sales associate");
+      console.log(err);
+    }
+    fetchSalesAssociates();
+  };
+
+  const columns = [
+    { key: 'AssociateID', label: 'ID' },
+    { key: 'FirstName', label: 'First Name' },
+    { key: 'LastName', label: 'Last Name' },
+    { key: 'Email', label: 'Email', render: (value) => value || '' },
+    { key: 'PhoneNumber', label: 'Phone Number', render: (value) => value || '' },
+    { key: 'Type', label: 'Type', render: (value) => value || '' },
+  ];
+
+  return <DataTable columns={columns} data={salesAssociates} onEdit={handleEdit} onDelete={handleDelete} />;
 };
 
 export default SalesAssociatesTable;

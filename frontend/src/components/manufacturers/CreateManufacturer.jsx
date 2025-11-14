@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 function CreateManufacturer() {
   const navigate = useNavigate();
@@ -53,42 +56,76 @@ function CreateManufacturer() {
     }));
   };
 
+  const handleCancel = () => {
+    navigate("/manufacturers");
+  };
+
   return (
-    <>
-      <h2>Add Manufacturer</h2>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="Name">Name</label>
-        <input
-          type="text"
-          name="Name"
-          value={formData.Name}
-          onChange={handleInputChange}
-          required
-        />
-        <label htmlFor="ContactEmail">Contact Email</label>
-        <input
-          type="email"
-          name="ContactEmail"
-          value={formData.ContactEmail}
-          onChange={handleInputChange}
-        />
-        <label htmlFor="PhoneNumber">Phone Number</label>
-        <input
-          type="text"
-          name="PhoneNumber"
-          value={formData.PhoneNumber}
-          onChange={handleInputChange}
-        />
-        <label htmlFor="Address">Address</label>
-        <input
-          type="text"
-          name="Address"
-          value={formData.Address}
-          onChange={handleInputChange}
-        />
-        <button type="submit">Add Manufacturer</button>
+    <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <h1 className="text-3xl font-bold mb-6">Add Manufacturer</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 rounded-lg border border-border">
+        <div className="space-y-2">
+          <Label htmlFor="Name">
+            Manufacturer Name <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="Name"
+            name="Name"
+            type="text"
+            required
+            value={formData.Name}
+            onChange={handleInputChange}
+            placeholder="Enter manufacturer name"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="ContactEmail">Contact Email</Label>
+          <Input
+            id="ContactEmail"
+            name="ContactEmail"
+            type="email"
+            value={formData.ContactEmail}
+            onChange={handleInputChange}
+            placeholder="contact@example.com"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="PhoneNumber">Phone Number</Label>
+            <Input
+              id="PhoneNumber"
+              name="PhoneNumber"
+              type="text"
+              value={formData.PhoneNumber}
+              onChange={handleInputChange}
+              placeholder="555-0000"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="Address">Address</Label>
+            <Input
+              id="Address"
+              name="Address"
+              type="text"
+              value={formData.Address}
+              onChange={handleInputChange}
+              placeholder="123 Main St, City, State"
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <Button type="submit">Add Manufacturer</Button>
+          <Button type="button" variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </div>
       </form>
-    </>
+    </div>
   );
 }
 

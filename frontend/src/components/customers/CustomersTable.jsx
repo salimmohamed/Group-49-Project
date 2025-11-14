@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import CustomerTableRow from "./CustomerTableRow";
+import { DataTable } from "@/components/DataTable";
 
 const CustomersTable = () => {
   // Mock data for Step 3 Draft demonstration
@@ -12,6 +13,7 @@ const CustomersTable = () => {
     { CustomerID: 5, FirstName: 'Emma', LastName: 'Garcia', Email: 'emma.garcia@email.com', PhoneNumber: '555-2005', Address: '500 Maple Ave, Portland, OR' }
   ];
 
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState(mockCustomers);
 
   const fetchCustomers = async () => {
@@ -35,36 +37,38 @@ const CustomersTable = () => {
     fetchCustomers();
   }, []);
 
-  return (
-    <div>
-      <h2>Customers Table</h2>
-      {customers.length === 0 ? (
-        <div>
-          <p>No customers found.</p>
-        </div>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Email</th>
-              <th>Phone Number</th>
-              <th>Address</th>
-              <th>Edit</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {customers.map((customer) => (
-              <CustomerTableRow key={customer.CustomerID} customer={customer} fetchCustomers={fetchCustomers} />
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
+  const handleEdit = (customer) => {
+    navigate("/customers/edit/" + customer.CustomerID, { state: { customer } });
+  };
+
+  const handleDelete = async (customer) => {
+    if (!window.confirm(`Are you sure you want to delete ${customer.FirstName} ${customer.LastName}?`)) {
+      return;
+    }
+
+    try {
+      const URL = import.meta.env.VITE_API_URL + "customers/" + customer.CustomerID;
+      const response = await axios.delete(URL);
+      if (response.status === 204) {
+        alert("Customer deleted successfully");
+      }
+    } catch (err) {
+      alert(err.response?.data?.error || "Error deleting customer");
+      console.log(err);
+    }
+    fetchCustomers();
+  };
+
+  const columns = [
+    { key: 'CustomerID', label: 'ID' },
+    { key: 'FirstName', label: 'First Name' },
+    { key: 'LastName', label: 'Last Name' },
+    { key: 'Email', label: 'Email', render: (value) => value || '' },
+    { key: 'PhoneNumber', label: 'Phone Number', render: (value) => value || '' },
+    { key: 'Address', label: 'Address', render: (value) => value || '' },
+  ];
+
+  return <DataTable columns={columns} data={customers} onEdit={handleEdit} onDelete={handleDelete} />;
 };
 
 export default CustomersTable;

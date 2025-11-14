@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import ManufacturerTableRow from "./ManufacturerTableRow";
+import { DataTable } from "@/components/DataTable";
 
 const ManufacturersTable = () => {
   // Mock data for Step 3 Draft demonstration
@@ -10,6 +11,7 @@ const ManufacturersTable = () => {
     { ManufacturerID: 3, Name: 'ElectroMax Systems', ContactEmail: 'sales@electromax.com', PhoneNumber: '555-0303', Address: '789 Electronics Blvd, Austin, TX' }
   ];
 
+  const navigate = useNavigate();
   const [manufacturers, setManufacturers] = useState(mockManufacturers);
 
   const fetchManufacturers = async () => {
@@ -33,35 +35,37 @@ const ManufacturersTable = () => {
     fetchManufacturers();
   }, []);
 
-  return (
-    <div>
-      <h2>Manufacturers Table</h2>
-      {manufacturers.length === 0 ? (
-        <div>
-          <p>No manufacturers found.</p>
-        </div>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Contact Email</th>
-              <th>Phone Number</th>
-              <th>Address</th>
-              <th>Edit</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {manufacturers.map((manufacturer) => (
-              <ManufacturerTableRow key={manufacturer.ManufacturerID} manufacturer={manufacturer} fetchManufacturers={fetchManufacturers} />
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
+  const handleEdit = (manufacturer) => {
+    navigate("/manufacturers/edit/" + manufacturer.ManufacturerID, { state: { manufacturer } });
+  };
+
+  const handleDelete = async (manufacturer) => {
+    if (!window.confirm(`Are you sure you want to delete ${manufacturer.Name}?`)) {
+      return;
+    }
+
+    try {
+      const URL = import.meta.env.VITE_API_URL + "manufacturers/" + manufacturer.ManufacturerID;
+      const response = await axios.delete(URL);
+      if (response.status === 204) {
+        alert("Manufacturer deleted successfully");
+      }
+    } catch (err) {
+      alert(err.response?.data?.error || "Error deleting manufacturer");
+      console.log(err);
+    }
+    fetchManufacturers();
+  };
+
+  const columns = [
+    { key: 'ManufacturerID', label: 'ID' },
+    { key: 'Name', label: 'Name' },
+    { key: 'ContactEmail', label: 'Contact Email', render: (value) => value || '' },
+    { key: 'PhoneNumber', label: 'Phone Number', render: (value) => value || '' },
+    { key: 'Address', label: 'Address', render: (value) => value || '' },
+  ];
+
+  return <DataTable columns={columns} data={manufacturers} onEdit={handleEdit} onDelete={handleDelete} />;
 };
 
 export default ManufacturersTable;

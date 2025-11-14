@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const UpdateProduct = () => {
   const { id } = useParams();
@@ -64,75 +74,105 @@ const UpdateProduct = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate("/products");
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="container mx-auto px-4 py-8">Loading...</div>;
   }
 
   return (
-    <div>
-      <h2>Update Product</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
+    <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <h1 className="text-3xl font-bold mb-6">Update Product</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-6 bg-card p-6 rounded-lg border border-border">
+        <div className="space-y-2">
+          <Label htmlFor="Name">
+            Product Name <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="Name"
             name="Name"
-            onChange={handleInputChange}
+            type="text"
             required
             value={formData.Name}
+            onChange={handleInputChange}
+            placeholder="Enter product name"
           />
         </div>
-        <div>
-          <label>Description:</label>
-          <textarea
+
+        <div className="space-y-2">
+          <Label htmlFor="Description">Description</Label>
+          <Input
+            id="Description"
             name="Description"
-            onChange={handleInputChange}
+            type="text"
             value={formData.Description}
+            onChange={handleInputChange}
+            placeholder="Enter product description"
           />
         </div>
-        <div>
-          <label>Price:</label>
-          <input
-            type="number"
-            step="0.01"
-            name="Price"
-            onChange={handleInputChange}
-            required
-            value={formData.Price}
-          />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="Price">
+              Price <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="Price"
+              name="Price"
+              type="number"
+              step="0.01"
+              required
+              value={formData.Price}
+              onChange={handleInputChange}
+              placeholder="0.00"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="Stock">Stock Quantity</Label>
+            <Input
+              id="Stock"
+              name="Stock"
+              type="number"
+              value={formData.Stock}
+              onChange={handleInputChange}
+              placeholder="0"
+            />
+          </div>
         </div>
-        <div>
-          <label>Stock:</label>
-          <input
-            type="number"
-            name="Stock"
-            onChange={handleInputChange}
-            value={formData.Stock}
-          />
-        </div>
-        <div>
-          <label>Manufacturer:</label>
-          <select
-            name="ManufacturerID"
-            value={formData.ManufacturerID}
-            onChange={handleInputChange}
+
+        <div className="space-y-2">
+          <Label htmlFor="ManufacturerID">Manufacturer</Label>
+          <Select
+            value={formData.ManufacturerID.toString()}
+            onValueChange={(value) => setFormData({ ...formData, ManufacturerID: value })}
           >
-            <option value="">None</option>
-            {manufacturers.map((manufacturer) => (
-              <option key={manufacturer.ManufacturerID} value={manufacturer.ManufacturerID}>
-                {manufacturer.Name}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="Select manufacturer" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="null">None</SelectItem>
+              {manufacturers.map((manufacturer) => (
+                <SelectItem key={manufacturer.ManufacturerID} value={manufacturer.ManufacturerID.toString()}>
+                  {manufacturer.Name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <button type="button" onClick={() => navigate("/products")}>
-          Cancel
-        </button>
-        <button type="submit">Update</button>
+
+        <div className="flex gap-3 pt-4">
+          <Button type="submit">Update</Button>
+          <Button type="button" variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </div>
       </form>
     </div>
   );
 };
 
 export default UpdateProduct;
-
