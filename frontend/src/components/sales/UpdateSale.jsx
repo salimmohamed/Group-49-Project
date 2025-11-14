@@ -6,9 +6,10 @@ const UpdateSale = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const prevSale = location.state.sale;
+  const prevSale = location.state?.sale || {};
   const [customers, setCustomers] = useState([]);
   const [salesAssociates, setSalesAssociates] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     CustomerID: prevSale.CustomerID || "",
@@ -18,10 +19,17 @@ const UpdateSale = () => {
   });
 
   useEffect(() => {
+    // Redirect if no sale state was passed
+    if (!location.state || !location.state.sale) {
+      navigate("/sales");
+      return;
+    }
+
     const fetchData = async () => {
       try {
-        const customersURL = import.meta.env.VITE_API_URL + "customers";
-        const associatesURL = import.meta.env.VITE_API_URL + "salesAssociates";
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8500/api/";
+        const customersURL = API_URL + "customers";
+        const associatesURL = API_URL + "salesAssociates";
         const [customersRes, associatesRes] = await Promise.all([
           axios.get(customersURL),
           axios.get(associatesURL),
@@ -31,9 +39,10 @@ const UpdateSale = () => {
       } catch (error) {
         console.error("Error fetching data:", error);
       }
+      setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [location.state, navigate]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -59,6 +68,10 @@ const UpdateSale = () => {
       alert("Error updating sale");
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
@@ -103,7 +116,7 @@ const UpdateSale = () => {
             name="OrderDate"
             onChange={handleInputChange}
             required
-            defaultValue={prevSale.OrderDate}
+            value={formData.OrderDate}
           />
         </div>
         <div>
@@ -112,7 +125,7 @@ const UpdateSale = () => {
             type="text"
             name="Status"
             onChange={handleInputChange}
-            defaultValue={prevSale.Status}
+            value={formData.Status}
           />
         </div>
         <button type="button" onClick={() => navigate("/sales")}>

@@ -6,8 +6,9 @@ const UpdateProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const prevProduct = location.state.product;
+  const prevProduct = location.state?.product || {};
   const [manufacturers, setManufacturers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     Name: prevProduct.Name || "",
@@ -18,17 +19,25 @@ const UpdateProduct = () => {
   });
 
   useEffect(() => {
+    // Redirect if no product state was passed
+    if (!location.state || !location.state.product) {
+      navigate("/products");
+      return;
+    }
+
     const fetchManufacturers = async () => {
       try {
-        const URL = import.meta.env.VITE_API_URL + "manufacturers";
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8500/api/";
+        const URL = API_URL + "manufacturers";
         const response = await axios.get(URL);
         setManufacturers(response.data);
       } catch (error) {
         console.error("Error fetching manufacturers:", error);
       }
+      setLoading(false);
     };
     fetchManufacturers();
-  }, []);
+  }, [location.state, navigate]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -55,6 +64,10 @@ const UpdateProduct = () => {
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
       <h2>Update Product</h2>
@@ -66,7 +79,7 @@ const UpdateProduct = () => {
             name="Name"
             onChange={handleInputChange}
             required
-            defaultValue={prevProduct.Name}
+            value={formData.Name}
           />
         </div>
         <div>
@@ -74,7 +87,7 @@ const UpdateProduct = () => {
           <textarea
             name="Description"
             onChange={handleInputChange}
-            defaultValue={prevProduct.Description}
+            value={formData.Description}
           />
         </div>
         <div>
@@ -85,7 +98,7 @@ const UpdateProduct = () => {
             name="Price"
             onChange={handleInputChange}
             required
-            defaultValue={prevProduct.Price}
+            value={formData.Price}
           />
         </div>
         <div>
@@ -94,7 +107,7 @@ const UpdateProduct = () => {
             type="number"
             name="Stock"
             onChange={handleInputChange}
-            defaultValue={prevProduct.Stock}
+            value={formData.Stock}
           />
         </div>
         <div>

@@ -4,7 +4,7 @@
   "description": "This is the backend express API that connects the frontend to the mariadb database",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "nodemon --legacy-watch server.js",
     "serve": "npx forever start server.js"
   },
   "contributors": [
