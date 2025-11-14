@@ -47,7 +47,7 @@ export default function HomePage() {
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold mb-4 text-balance">Tech R Us Sales Management</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-            Complete sales management system for electronics retail operations
+            Sales Management System for Tech R Us
           </p>
         </div>
 
