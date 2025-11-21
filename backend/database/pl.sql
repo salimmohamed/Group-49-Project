@@ -1,10 +1,16 @@
--- Stored Procedure to reset the Tech R Us database
--- This procedure drops all tables, recreates them, and inserts sample data
+-- Stored procedures for Tech R Us database
+-- Includes:
+--   - sp_reset_techrus: reset schema + sample data
+--   - sp_delete_customer: delete a customer by ID (CUD demo)
 
 DROP PROCEDURE IF EXISTS sp_reset_techrus;
+DROP PROCEDURE IF EXISTS sp_delete_customer;
 
 DELIMITER //
 
+-- =====================================================
+-- Procedure: sp_reset_techrus
+-- =====================================================
 CREATE PROCEDURE sp_reset_techrus()
 BEGIN
     -- Disable foreign key checks temporarily
@@ -168,8 +174,17 @@ BEGIN
 
     -- Re-enable foreign key checks
     SET FOREIGN_KEY_CHECKS = 1;
+END //
 
+-- =====================================================
+-- Procedure: sp_delete_customer
+-- =====================================================
+CREATE PROCEDURE sp_delete_customer(IN p_CustomerID INT)
+BEGIN
+  DELETE FROM `Customers`
+  WHERE `CustomerID` = p_CustomerID;
 END //
 
 DELIMITER ;
+
 

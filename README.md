@@ -10,19 +10,13 @@ Authors: Salim Mohamed, Samuel Veney
    CREATE DATABASE tech_r_us_db;
    ```
 
-2. **Install/reset stored procedure (`sp_reset_techrus`)**
+2. **Install stored procedures (`sp_reset_techrus`, `sp_delete_customer`)**
 
    ```bash
-   mysql -u root tech_r_us_db < backend/database/ddl.sql
+   mysql -u root tech_r_us_db < backend/database/pl.sql
    ```
 
-3. **Install delete stored procedure (`sp_delete_customer`)**
-
-   ```bash
-   mysql -u root tech_r_us_db < backend/database/sp_delete_customer.sql
-   ```
-
-4. **Environment variables**
+3. **Environment variables**
    - `backend/.env`:
      ```env
      DB_HOST=
