@@ -1,6 +1,6 @@
 -- CS340 Project Step 2 - Group 49
 -- Team: Salim Mohamed & Ky Veney
--- Purpose: Schema (DDL) and example data inserts for Tech R Us Sales Management System
+-- Purpose: Old Schema (DDL) and example data inserts for Tech R Us Sales Management System kept for reference documentation
 
 -- -----------------------------
 -- Table: Customers

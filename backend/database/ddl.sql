@@ -1,7 +1,16 @@
--- Disable foreign key checks temporarily
-SET foreign_key_checks = 0;
+-- Stored Procedure to reset the Tech R Us database schema and sample data
+-- Wraps the original DDL script in a procedure, similar to the course example.
 
--- Manufacturers table
+DROP PROCEDURE IF EXISTS sp_reset_techrus;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_reset_techrus()
+BEGIN
+    -- Disable foreign key checks temporarily
+    SET foreign_key_checks = 0;
+
+    -- Manufacturers table
 DROP TABLE IF EXISTS `Manufacturers`;
 
 CREATE TABLE `Manufacturers` (
@@ -19,7 +28,7 @@ VALUES
     (2, 'Digital Solutions Inc', 'info@digitalsolutions.com', '555-0202', '456 Digital Ave, Seattle, WA'),
     (3, 'ElectroMax Systems', 'sales@electromax.com', '555-0303', '789 Electronics Blvd, Austin, TX');
 
--- SalesAssociates table
+    -- SalesAssociates table
 DROP TABLE IF EXISTS `SalesAssociates`;
 
 CREATE TABLE `SalesAssociates` (
@@ -38,7 +47,7 @@ VALUES
     (2, 'Sarah', 'Johnson', 'sarah.johnson@techrus.com', '555-1002', 'Part-time'),
     (3, 'Michael', 'Brown', 'michael.brown@techrus.com', '555-1003', 'Full-time');
 
--- Customers table
+    -- Customers table
 DROP TABLE IF EXISTS `Customers`;
 
 CREATE TABLE `Customers` (
@@ -57,7 +66,7 @@ VALUES
     (2, 'Bob', 'Davis', 'bob.davis@email.com', '555-2002', '200 Oak Ave, Portland, OR'),
     (3, 'Carol', 'Miller', 'carol.miller@email.com', '555-2003', '300 Pine Rd, Portland, OR');
 
--- Products table
+    -- Products table
 DROP TABLE IF EXISTS `Products`;
 
 CREATE TABLE `Products` (
@@ -79,7 +88,7 @@ VALUES
     (3, 'USB-C Cable', 'Fast charging USB-C cable', 19.99, 200, 3),
     (4, 'Keyboard Elite', 'Mechanical keyboard with RGB lighting', 89.99, 50, 1);
 
--- Sales table
+    -- Sales table
 DROP TABLE IF EXISTS `Sales`;
 
 CREATE TABLE `Sales` (
@@ -101,7 +110,7 @@ VALUES
     (2, 2, 2, '2024-01-16', 'Pending'),
     (3, 1, 1, '2024-01-17', 'Completed');
 
--- SalesDetails table
+    -- SalesDetails table
 DROP TABLE IF EXISTS `SalesDetails`;
 
 CREATE TABLE `SalesDetails` (
@@ -124,5 +133,9 @@ VALUES
     (3, 2, 3, 5, 19.99),
     (4, 3, 4, 1, 89.99);
 
--- Re-enable foreign key checks
-SET foreign_key_checks = 1;
+    -- Re-enable foreign key checks
+    SET foreign_key_checks = 1;
+END //
+
+DELIMITER ;
+

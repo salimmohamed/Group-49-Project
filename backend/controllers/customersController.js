@@ -83,7 +83,8 @@ const deleteCustomer = async (req, res) => {
       return res.status(404).send("Customer not found");
     }
 
-    await db.query("DELETE FROM Customers WHERE CustomerID = ?", [customerID]);
+    // Use stored procedure
+    await db.query("CALL sp_delete_customer(?)", [customerID]);
     res.status(204).json({ message: "Customer deleted successfully" });
   } catch (error) {
     console.error("Error deleting customer:", error);

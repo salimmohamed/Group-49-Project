@@ -47,7 +47,8 @@ const CustomersTable = () => {
     }
 
     try {
-      const URL = import.meta.env.VITE_API_URL + "customers/" + customer.CustomerID;
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8500/api/";
+      const URL = API_URL + "customers/" + customer.CustomerID;
       const response = await axios.delete(URL);
       if (response.status === 204) {
         alert("Customer deleted successfully");
