@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import axios from 'axios';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -16,9 +17,38 @@ const navLinks = [
 export function Navigation() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
-  // Get the base path (e.g., /customers from /customers/add)
   const basePath = '/' + location.pathname.split('/')[1];
+
+  const handleReset = async () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to reset the database?\n\n' +
+      'This will delete all current data and restore the sample dataset.'
+    );
+
+    if (!confirmed) return;
+
+    setIsResetting(true);
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8500/api/";
+      const response = await axios.post(`${API_URL}reset`);
+
+      if (response.data.success) {
+        alert('Database reset successfully.');
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Error resetting database:', error);
+      alert(
+        'Error resetting database. ' +
+        (error.response?.data?.error || 'Please try again.')
+      );
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   return (
     <nav className="bg-card border-b border-border sticky top-0 z-50">
@@ -44,6 +74,21 @@ export function Navigation() {
                 {link.name}
               </Link>
             ))}
+
+            <button
+              onClick={handleReset}
+              disabled={isResetting}
+              className={cn(
+                'ml-2 px-4 py-2 rounded-md text-sm font-medium transition-colors',
+                'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+                'flex items-center gap-2',
+                isResetting && 'opacity-50 cursor-not-allowed'
+              )}
+              title="Reset Database"
+            >
+              <RefreshCw className={cn('w-4 h-4', isResetting && 'animate-spin')} />
+              {isResetting ? 'Resetting...' : 'Reset DB'}
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -74,6 +119,23 @@ export function Navigation() {
                 {link.name}
               </Link>
             ))}
+
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                handleReset();
+              }}
+              disabled={isResetting}
+              className={cn(
+                'w-full px-4 py-2 rounded-md text-sm font-medium transition-colors',
+                'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+                'flex items-center justify-center gap-2',
+                isResetting && 'opacity-50 cursor-not-allowed'
+              )}
+            >
+              <RefreshCw className={cn('w-4 h-4', isResetting && 'animate-spin')} />
+              {isResetting ? 'Resetting...' : 'Reset DB'}
+            </button>
           </div>
         )}
       </div>

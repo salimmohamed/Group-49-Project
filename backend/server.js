@@ -14,6 +14,7 @@ app.use("/api/salesAssociates", require("./routes/salesAssociatesRoutes"));
 app.use("/api/products", require("./routes/productsRoutes"));
 app.use("/api/sales", require("./routes/salesRoutes"));
 app.use("/api/salesDetails", require("./routes/salesDetailsRoutes"));
+app.use("/api/reset", require("./routes/resetRoutes"));
 
 const os = require("os");
 const hostname = os.hostname();
