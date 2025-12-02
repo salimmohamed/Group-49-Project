@@ -24,7 +24,7 @@ const SalesAssociatesTable = () => {
         setSalesAssociates(mockSalesAssociates);
         return;
       }
-      setSalesAssociates(Array.isArray(response.data) && response.data.length > 0 ? response.data : mockSalesAssociates);
+      setSalesAssociates(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching sales associates:", error);
       setSalesAssociates(mockSalesAssociates);

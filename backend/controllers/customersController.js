@@ -30,16 +30,10 @@ const getCustomerByID = async (req, res) => {
 const createCustomer = async (req, res) => {
   try {
     const { FirstName, LastName, Email, PhoneNumber, Address } = req.body;
-    const query =
-      "INSERT INTO Customers (FirstName, LastName, Email, PhoneNumber, Address) VALUES (?, ?, ?, ?, ?)";
-
-    const response = await db.query(query, [
-      FirstName,
-      LastName,
-      Email || null,
-      PhoneNumber || null,
-      Address || null,
-    ]);
+    const response = await db.query(
+      "CALL sp_create_customer(?, ?, ?, ?, ?)",
+      [FirstName, LastName, Email || null, PhoneNumber || null, Address || null]
+    );
     res.status(201).json(response);
   } catch (error) {
     console.error("Error creating customer:", error);
@@ -52,17 +46,10 @@ const updateCustomer = async (req, res) => {
   const { FirstName, LastName, Email, PhoneNumber, Address } = req.body;
 
   try {
-    const query =
-      "UPDATE Customers SET FirstName=?, LastName=?, Email=?, PhoneNumber=?, Address=? WHERE CustomerID=?";
-
-    await db.query(query, [
-      FirstName,
-      LastName,
-      Email || null,
-      PhoneNumber || null,
-      Address || null,
-      customerID,
-    ]);
+    await db.query(
+      "CALL sp_update_customer(?, ?, ?, ?, ?, ?)",
+      [customerID, FirstName, LastName, Email || null, PhoneNumber || null, Address || null]
+    );
     res.json({ message: "Customer updated successfully." });
   } catch (error) {
     console.error("Error updating customer:", error);

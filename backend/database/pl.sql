@@ -5,6 +5,8 @@
 
 DROP PROCEDURE IF EXISTS sp_reset_techrus;
 DROP PROCEDURE IF EXISTS sp_delete_customer;
+DROP PROCEDURE IF EXISTS sp_create_customer;
+DROP PROCEDURE IF EXISTS sp_update_customer;
 
 DELIMITER //
 
@@ -183,6 +185,212 @@ CREATE PROCEDURE sp_delete_customer(IN p_CustomerID INT)
 BEGIN
   DELETE FROM `Customers`
   WHERE `CustomerID` = p_CustomerID;
+END //
+
+-- =====================================================
+-- Procedure: sp_create_customer
+-- =====================================================
+CREATE PROCEDURE sp_create_customer(
+    IN p_FirstName VARCHAR(255),
+    IN p_LastName VARCHAR(255),
+    IN p_Email VARCHAR(255),
+    IN p_PhoneNumber VARCHAR(50),
+    IN p_Address VARCHAR(255)
+)
+BEGIN
+    INSERT INTO Customers (FirstName, LastName, Email, PhoneNumber, Address)
+    VALUES (p_FirstName, p_LastName, p_Email, p_PhoneNumber, p_Address);
+END //
+
+-- =====================================================
+-- Procedure: sp_update_customer
+-- =====================================================
+CREATE PROCEDURE sp_update_customer(
+    IN p_CustomerID INT,
+    IN p_FirstName VARCHAR(255),
+    IN p_LastName VARCHAR(255),
+    IN p_Email VARCHAR(255),
+    IN p_PhoneNumber VARCHAR(50),
+    IN p_Address VARCHAR(255)
+)
+BEGIN
+    UPDATE Customers 
+    SET FirstName = p_FirstName,
+        LastName = p_LastName,
+        Email = p_Email,
+        PhoneNumber = p_PhoneNumber,
+        Address = p_Address
+    WHERE CustomerID = p_CustomerID;
+END //
+
+-- =====================================================
+-- Procedure: sp_create_product
+-- =====================================================
+CREATE PROCEDURE sp_create_product(
+    IN p_Name VARCHAR(255),
+    IN p_Description TEXT,
+    IN p_Price DECIMAL(10,2),
+    IN p_Stock INT,
+    IN p_ManufacturerID INT
+)
+BEGIN
+    INSERT INTO Products (Name, Description, Price, Stock, ManufacturerID)
+    VALUES (p_Name, p_Description, p_Price, p_Stock, p_ManufacturerID);
+END //
+
+-- =====================================================
+-- Procedure: sp_update_product
+-- =====================================================
+CREATE PROCEDURE sp_update_product(
+    IN p_ProductID INT,
+    IN p_Name VARCHAR(255),
+    IN p_Description TEXT,
+    IN p_Price DECIMAL(10,2),
+    IN p_Stock INT,
+    IN p_ManufacturerID INT
+)
+BEGIN
+    UPDATE Products SET
+      Name = p_Name,
+      Description = p_Description,
+      Price = p_Price,
+      Stock = p_Stock,
+      ManufacturerID = p_ManufacturerID
+    WHERE ProductID = p_ProductID;
+END //
+
+-- =====================================================
+-- Procedure: sp_delete_product
+-- =====================================================
+CREATE PROCEDURE sp_delete_product(IN p_ProductID INT)
+BEGIN
+  DELETE FROM Products WHERE ProductID = p_ProductID;
+END //
+
+-- =====================================================
+-- Procedure: sp_create_sales_associate
+-- =====================================================
+CREATE PROCEDURE sp_create_sales_associate(
+    IN p_FirstName VARCHAR(255),
+    IN p_LastName VARCHAR(255),
+    IN p_Email VARCHAR(255),
+    IN p_PhoneNumber VARCHAR(50),
+    IN p_Type VARCHAR(50)
+)
+BEGIN
+    INSERT INTO SalesAssociates (FirstName, LastName, Email, PhoneNumber, Type)
+    VALUES (p_FirstName, p_LastName, p_Email, p_PhoneNumber, p_Type);
+END //
+
+-- =====================================================
+-- Procedure: sp_update_sales_associate
+-- =====================================================
+CREATE PROCEDURE sp_update_sales_associate(
+    IN p_AssociateID INT,
+    IN p_FirstName VARCHAR(255),
+    IN p_LastName VARCHAR(255),
+    IN p_Email VARCHAR(255),
+    IN p_PhoneNumber VARCHAR(50),
+    IN p_Type VARCHAR(50)
+)
+BEGIN
+    UPDATE SalesAssociates SET
+      FirstName = p_FirstName,
+      LastName = p_LastName,
+      Email = p_Email,
+      PhoneNumber = p_PhoneNumber,
+      Type = p_Type
+    WHERE AssociateID = p_AssociateID;
+END //
+
+-- =====================================================
+-- Procedure: sp_delete_sales_associate
+-- =====================================================
+CREATE PROCEDURE sp_delete_sales_associate(IN p_AssociateID INT)
+BEGIN
+  DELETE FROM SalesAssociates WHERE AssociateID = p_AssociateID;
+END //
+
+-- =====================================================
+-- Procedure: sp_create_sale
+-- =====================================================
+CREATE PROCEDURE sp_create_sale(
+    IN p_CustomerID INT,
+    IN p_AssociateID INT,
+    IN p_OrderDate DATE,
+    IN p_Status VARCHAR(50)
+)
+BEGIN
+    INSERT INTO Sales (CustomerID, AssociateID, OrderDate, Status)
+    VALUES (p_CustomerID, p_AssociateID, p_OrderDate, p_Status);
+END //
+
+-- =====================================================
+-- Procedure: sp_update_sale
+-- =====================================================
+CREATE PROCEDURE sp_update_sale(
+    IN p_SaleID INT,
+    IN p_CustomerID INT,
+    IN p_AssociateID INT,
+    IN p_OrderDate DATE,
+    IN p_Status VARCHAR(50)
+)
+BEGIN
+    UPDATE Sales SET
+      CustomerID = p_CustomerID,
+      AssociateID = p_AssociateID,
+      OrderDate = p_OrderDate,
+      Status = p_Status
+    WHERE SaleID = p_SaleID;
+END //
+
+-- =====================================================
+-- Procedure: sp_delete_sale
+-- =====================================================
+CREATE PROCEDURE sp_delete_sale(IN p_SaleID INT)
+BEGIN
+  DELETE FROM Sales WHERE SaleID = p_SaleID;
+END //
+
+-- =====================================================
+-- Procedure: sp_create_sales_detail
+-- =====================================================
+CREATE PROCEDURE sp_create_sales_detail(
+    IN p_SaleID INT,
+    IN p_ProductID INT,
+    IN p_Quantity INT,
+    IN p_ItemPrice DECIMAL(10,2)
+)
+BEGIN
+    INSERT INTO SalesDetails (SaleID, ProductID, Quantity, ItemPrice)
+    VALUES (p_SaleID, p_ProductID, p_Quantity, p_ItemPrice);
+END //
+
+-- =====================================================
+-- Procedure: sp_update_sales_detail
+-- =====================================================
+CREATE PROCEDURE sp_update_sales_detail(
+    IN p_SalesDetailID INT,
+    IN p_SaleID INT,
+    IN p_ProductID INT,
+    IN p_Quantity INT,
+    IN p_ItemPrice DECIMAL(10,2)
+)
+BEGIN
+    UPDATE SalesDetails SET
+      SaleID = p_SaleID,
+      ProductID = p_ProductID,
+      Quantity = p_Quantity,
+      ItemPrice = p_ItemPrice
+    WHERE SalesDetailID = p_SalesDetailID;
+END //
+
+-- =====================================================
+-- Procedure: sp_delete_sales_detail
+-- =====================================================
+CREATE PROCEDURE sp_delete_sales_detail(IN p_SalesDetailID INT)
+BEGIN
+  DELETE FROM SalesDetails WHERE SalesDetailID = p_SalesDetailID;
 END //
 
 DELIMITER ;

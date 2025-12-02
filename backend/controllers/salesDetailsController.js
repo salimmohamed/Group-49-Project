@@ -30,9 +30,7 @@ const getSalesDetailByID = async (req, res) => {
 const createSalesDetail = async (req, res) => {
   try {
     const { SaleID, ProductID, Quantity, ItemPrice } = req.body;
-    const query =
-      "INSERT INTO SalesDetails (SaleID, ProductID, Quantity, ItemPrice) VALUES (?, ?, ?, ?)";
-
+    const query = "CALL sp_create_sales_detail(?, ?, ?, ?)";
     const response = await db.query(query, [
       parseInt(SaleID),
       parseInt(ProductID),
@@ -49,17 +47,14 @@ const createSalesDetail = async (req, res) => {
 const updateSalesDetail = async (req, res) => {
   const salesDetailID = req.params.id;
   const { SaleID, ProductID, Quantity, ItemPrice } = req.body;
-
   try {
-    const query =
-      "UPDATE SalesDetails SET SaleID=?, ProductID=?, Quantity=?, ItemPrice=? WHERE SalesDetailID=?";
-
+    const query = "CALL sp_update_sales_detail(?, ?, ?, ?, ?)";
     await db.query(query, [
+      salesDetailID,
       parseInt(SaleID),
       parseInt(ProductID),
       parseInt(Quantity),
       parseFloat(ItemPrice),
-      salesDetailID,
     ]);
     res.json({ message: "Sales detail updated successfully." });
   } catch (error) {
@@ -70,18 +65,15 @@ const updateSalesDetail = async (req, res) => {
 
 const deleteSalesDetail = async (req, res) => {
   const salesDetailID = req.params.id;
-
   try {
     const [isExisting] = await db.query(
       "SELECT 1 FROM SalesDetails WHERE SalesDetailID = ?",
       [salesDetailID]
     );
-
     if (isExisting.length === 0) {
       return res.status(404).send("Sales detail not found");
     }
-
-    await db.query("DELETE FROM SalesDetails WHERE SalesDetailID = ?", [salesDetailID]);
+    await db.query("CALL sp_delete_sales_detail(?)", [salesDetailID]);
     res.status(204).json({ message: "Sales detail deleted successfully" });
   } catch (error) {
     console.error("Error deleting sales detail:", error);

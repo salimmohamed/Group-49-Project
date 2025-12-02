@@ -30,9 +30,7 @@ const getSaleByID = async (req, res) => {
 const createSale = async (req, res) => {
   try {
     const { CustomerID, AssociateID, OrderDate, Status } = req.body;
-    const query =
-      "INSERT INTO Sales (CustomerID, AssociateID, OrderDate, Status) VALUES (?, ?, ?, ?)";
-
+    const query = "CALL sp_create_sale(?, ?, ?, ?)";
     const response = await db.query(query, [
       parseInt(CustomerID),
       parseInt(AssociateID),
@@ -49,17 +47,14 @@ const createSale = async (req, res) => {
 const updateSale = async (req, res) => {
   const saleID = req.params.id;
   const { CustomerID, AssociateID, OrderDate, Status } = req.body;
-
   try {
-    const query =
-      "UPDATE Sales SET CustomerID=?, AssociateID=?, OrderDate=?, Status=? WHERE SaleID=?";
-
+    const query = "CALL sp_update_sale(?, ?, ?, ?, ?)";
     await db.query(query, [
+      saleID,
       parseInt(CustomerID),
       parseInt(AssociateID),
       OrderDate,
       Status || 'Pending',
-      saleID,
     ]);
     res.json({ message: "Sale updated successfully." });
   } catch (error) {
@@ -70,18 +65,15 @@ const updateSale = async (req, res) => {
 
 const deleteSale = async (req, res) => {
   const saleID = req.params.id;
-
   try {
     const [isExisting] = await db.query(
       "SELECT 1 FROM Sales WHERE SaleID = ?",
       [saleID]
     );
-
     if (isExisting.length === 0) {
       return res.status(404).send("Sale not found");
     }
-
-    await db.query("DELETE FROM Sales WHERE SaleID = ?", [saleID]);
+    await db.query("CALL sp_delete_sale(?)", [saleID]);
     res.status(204).json({ message: "Sale deleted successfully" });
   } catch (error) {
     console.error("Error deleting sale:", error);

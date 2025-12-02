@@ -25,7 +25,7 @@ const ProductsTable = () => {
         setProducts(mockProducts);
         return;
       }
-      setProducts(Array.isArray(response.data) && response.data.length > 0 ? response.data : mockProducts);
+      setProducts(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching products:", error);
       setProducts(mockProducts);

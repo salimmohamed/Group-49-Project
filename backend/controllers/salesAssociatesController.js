@@ -30,9 +30,7 @@ const getSalesAssociateByID = async (req, res) => {
 const createSalesAssociate = async (req, res) => {
   try {
     const { FirstName, LastName, Email, PhoneNumber, Type } = req.body;
-    const query =
-      "INSERT INTO SalesAssociates (FirstName, LastName, Email, PhoneNumber, Type) VALUES (?, ?, ?, ?, ?)";
-
+    const query = "CALL sp_create_sales_associate(?, ?, ?, ?, ?)";
     const response = await db.query(query, [
       FirstName,
       LastName,
@@ -50,18 +48,15 @@ const createSalesAssociate = async (req, res) => {
 const updateSalesAssociate = async (req, res) => {
   const associateID = req.params.id;
   const { FirstName, LastName, Email, PhoneNumber, Type } = req.body;
-
   try {
-    const query =
-      "UPDATE SalesAssociates SET FirstName=?, LastName=?, Email=?, PhoneNumber=?, Type=? WHERE AssociateID=?";
-
+    const query = "CALL sp_update_sales_associate(?, ?, ?, ?, ?, ?)";
     await db.query(query, [
+      associateID,
       FirstName,
       LastName,
       Email || null,
       PhoneNumber || null,
       Type || null,
-      associateID,
     ]);
     res.json({ message: "Sales associate updated successfully." });
   } catch (error) {
@@ -72,18 +67,15 @@ const updateSalesAssociate = async (req, res) => {
 
 const deleteSalesAssociate = async (req, res) => {
   const associateID = req.params.id;
-
   try {
     const [isExisting] = await db.query(
       "SELECT 1 FROM SalesAssociates WHERE AssociateID = ?",
       [associateID]
     );
-
     if (isExisting.length === 0) {
       return res.status(404).send("Sales associate not found");
     }
-
-    await db.query("DELETE FROM SalesAssociates WHERE AssociateID = ?", [associateID]);
+    await db.query("CALL sp_delete_sales_associate(?)", [associateID]);
     res.status(204).json({ message: "Sales associate deleted successfully" });
   } catch (error) {
     console.error("Error deleting sales associate:", error);

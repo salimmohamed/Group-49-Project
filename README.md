@@ -19,15 +19,15 @@ Authors: Salim Mohamed, Samuel Veney
 3. **Environment variables**
    - `backend/.env`:
      ```env
-     DB_HOST=
-     DB_USER=
+     DB_HOST=localhost
+     DB_USER=root
      DB_PASSWORD=
-     DB_DATABASE=
+     DB_DATABASE=tech_r_us_db
      PORT=8500
      ```
    - `frontend/.env`:
      ```env
-     VITE_API_URL=
+     VITE_API_URL=http://localhost:8500/api/
      ```
 
 ### Running the app

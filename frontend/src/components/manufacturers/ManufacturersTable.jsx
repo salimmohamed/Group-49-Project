@@ -24,7 +24,7 @@ const ManufacturersTable = () => {
         setManufacturers(mockManufacturers);
         return;
       }
-      setManufacturers(Array.isArray(response.data) && response.data.length > 0 ? response.data : mockManufacturers);
+      setManufacturers(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching manufacturers:", error);
       setManufacturers(mockManufacturers);

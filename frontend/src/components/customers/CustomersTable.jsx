@@ -26,7 +26,7 @@ const CustomersTable = () => {
         setCustomers(mockCustomers); // Use mock data on error
         return;
       }
-      setCustomers(Array.isArray(response.data) && response.data.length > 0 ? response.data : mockCustomers);
+      setCustomers(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching customers:", error);
       setCustomers(mockCustomers); // Use mock data on error

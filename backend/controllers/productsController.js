@@ -30,9 +30,7 @@ const getProductByID = async (req, res) => {
 const createProduct = async (req, res) => {
   try {
     const { Name, Description, Price, Stock, ManufacturerID } = req.body;
-    const query =
-      "INSERT INTO Products (Name, Description, Price, Stock, ManufacturerID) VALUES (?, ?, ?, ?, ?)";
-
+    const query = "CALL sp_create_product(?, ?, ?, ?, ?)";
     const response = await db.query(query, [
       Name,
       Description || null,
@@ -52,16 +50,14 @@ const updateProduct = async (req, res) => {
   const { Name, Description, Price, Stock, ManufacturerID } = req.body;
 
   try {
-    const query =
-      "UPDATE Products SET Name=?, Description=?, Price=?, Stock=?, ManufacturerID=? WHERE ProductID=?";
-
+    const query = "CALL sp_update_product(?, ?, ?, ?, ?, ?)";
     await db.query(query, [
+      productID,
       Name,
       Description || null,
       Price,
       Stock || 0,
       ManufacturerID === "" ? null : parseInt(ManufacturerID),
-      productID,
     ]);
     res.json({ message: "Product updated successfully." });
   } catch (error) {
@@ -78,12 +74,10 @@ const deleteProduct = async (req, res) => {
       "SELECT 1 FROM Products WHERE ProductID = ?",
       [productID]
     );
-
     if (isExisting.length === 0) {
       return res.status(404).send("Product not found");
     }
-
-    await db.query("DELETE FROM Products WHERE ProductID = ?", [productID]);
+    await db.query("CALL sp_delete_product(?)", [productID]);
     res.status(204).json({ message: "Product deleted successfully" });
   } catch (error) {
     console.error("Error deleting product:", error);
